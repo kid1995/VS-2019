@@ -4,7 +4,9 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class Server extends ImplMessageService {
+
     public Server() {}
+
     public static void main(String args[]) {
         try {
             // Instantiating the implementation class
