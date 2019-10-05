@@ -1,19 +1,15 @@
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
 // Servant Class für Dispatcher Skeleton und alle davon unterstürzen entfernten Objekt
 
 //TODO: ADD RECEIVED TIMESTAMP TO "newMessage()" Function
 
-public class ImplMessageService extends UnicastRemoteObject implements MessageService {
+public class ImplMessageService implements MessageService {
 
+    private static int MAX_MSG_CAPACITY = 10;
     private int msgID = 0;
-    private DeliveryQueue messageQueue;
 
-    protected ImplMessageService( int msgCapacity) throws RemoteException {
-        super();
-        this.messageQueue = new DeliveryQueue(msgCapacity);
-    }
+    private DeliveryQueue messageQueue = new DeliveryQueue(MAX_MSG_CAPACITY);
 
 
     @Override
