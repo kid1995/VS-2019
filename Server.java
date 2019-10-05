@@ -1,16 +1,17 @@
+import java.rmi.Naming;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class Server extends ImplMessageService {
+public class Server  {
 
     public Server() {}
 
     public static void main(String args[]) {
         try {
-            // Instantiating the implementation class
-            ImplMessageService obj = new ImplMessageService();
+            /*Instantiating the implementation class
+            ImplMessageService obj = new ImplMessageService(20);
 
             // Exporting the object of implementation class
             // (here we are exporting the remote object to the stub)
@@ -20,6 +21,9 @@ public class Server extends ImplMessageService {
             Registry registry = LocateRegistry.getRegistry();
 
             registry.bind("MessageService", stub);
+             */
+
+            Naming.rebind("//localhost/MessageService", new ImplMessageService(20));
             System.err.println("Server ready");
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
