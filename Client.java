@@ -6,7 +6,6 @@ public class Client {
     private  static final String QUIT = "Q";
     private  static final String GET = "G";
     private  static final String SEND = "S";
-
     private Client() {}
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
