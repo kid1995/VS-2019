@@ -3,34 +3,25 @@
 // TODO: Correct Queue, add and remove is not right
 public class DeliveryQueue{
     private Message[] deliveryQueue;
-    private int front, rear, capacity;
+    private int capacity;
 
 
     public DeliveryQueue(int capacity) {
         this.capacity = capacity;
-        this.front = 0;
-        this.rear = 0;
         this.deliveryQueue = new Message[capacity];
     }
 
 
 
-    public void add(Message msg){
-        this.front++;
-        this.front %=this.capacity;
-        deliveryQueue[this.front] =  msg;
-
-        System.out.println("rear: " +rear +" front: " + front);
+    public void add(String clientID, String msg, int msgID){
+        String id = Integer.toString(msgID);
+        Message newMsg = new Message(clientID, msg, id);
+        int queueIndex = msgID%capacity;
+        deliveryQueue[queueIndex] =  newMsg;
     }
 
-    public Message get(){
-        if(rear == front) {
-           System.out.println("Rear == Front");
-            return null;
-        }
-        System.out.println("rear: " +rear +" front: " + front);
-        this.rear++;
-        return this.deliveryQueue[this.rear];
+    public Message get(int msgID){
+        return deliveryQueue[msgID%capacity];
     }
 
 

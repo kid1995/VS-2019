@@ -1,26 +1,33 @@
-import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Server extends ImplMessageService {
 
-    public Server() {}
+public class Server {
+    public static final int  SERVICE_PORT = 1099;
+    public static final String SERVICE_NAME ="MessageService";
 
     public static void main(String args[]) {
-        try {
-            // Instantiating the implementation class
-            ImplMessageService obj = new ImplMessageService();
+        List<ClientInfo> clientInfos = new ArrayList<>();
 
-            // Exporting the object of implementation class
-            // (here we are exporting the remote object to the stub)
+        System.setProperty("java.security.policy","file:./test.policy");
+
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+
+
+        try {
+            ImplMessageService obj = new ImplMessageService(40,clientInfos);
             MessageService stub = (MessageService) UnicastRemoteObject.exportObject(obj, 0);
 
-            // Binding the remote object (stub) in the registry
-            Registry registry = LocateRegistry.getRegistry();
+            Registry registry = LocateRegistry.getRegistry(SERVICE_PORT);
+            registry.bind(SERVICE_NAME, stub);
 
-            registry.bind("MessageService", stub);
             System.err.println("Server ready");
+
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
             e.printStackTrace();
