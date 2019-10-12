@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.Date;
 
 public class Message implements Serializable {
 
@@ -10,9 +11,11 @@ public class Message implements Serializable {
 
 
     public Message(String clientID, String message, String messageID) {
+        Date date = new Date();
         this.clientID = clientID;
         this.message = message;
         this.messageID = messageID;
+        this.timeStamp = date.getTime();
     }
 
     public String getClientID() {
