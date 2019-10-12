@@ -22,13 +22,17 @@ If it was there, then run these commands:
 #####
 #Run#
 #####
-Start Java RMI App:
+Start Java RMI App at port 1099:
 
-	start rmiregistry
+	rmiregistry 1099
 
 Start Server Side:
 
 	java Server
+
+!!! If Server is not ready and throw error,
+    just ignore it, and start again,
+    this bug will fix in the future.
 
 Start Client Side:
 
