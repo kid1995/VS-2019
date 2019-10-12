@@ -32,4 +32,12 @@ public class ClientInfo {
     public void setLastActiveTime(long lastActiveTime) {
         this.lastActiveTime = lastActiveTime;
     }
+
+    @Override
+    public String toString() {
+        return "ClientInfo{" +
+                "clientID='" + clientID + '\'' +
+                ", lastActiveTime=" + lastActiveTime +
+                '}';
+    }
 }

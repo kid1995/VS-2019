@@ -1,5 +1,4 @@
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,12 +31,12 @@ public class ImplMessageService implements MessageService {
         int clientExit = isClientExited(clientID);
 
         if(clientExit< 0){
-            currentClient = new ClientInfo(clientID, 0, getCurrentTimeStamp() );
+            currentClient = new ClientInfo(clientID, 0, Timer.getCurrentTimeStamp());
             clientInfos.add(currentClient);
             clientExit = clientInfos.indexOf(currentClient);
         }else {
             currentClient = clientInfos.get(clientExit);
-            currentClient.setLastActiveTime(getCurrentTimeStamp());
+            currentClient.setLastActiveTime(Timer.getCurrentTimeStamp());
         }
         Message msg = messageQueue.get(currentClient.getLastMsg());
         if(msg != null) {
@@ -86,11 +85,6 @@ public class ImplMessageService implements MessageService {
                 clientInfos.set(clientIndex, currentClient);
             }
         }
-    }
-
-    private long getCurrentTimeStamp(){
-        Date date = new Date();
-        return date.getTime();
     }
 
 }
