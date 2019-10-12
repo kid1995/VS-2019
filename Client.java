@@ -6,22 +6,31 @@ public class Client {
     private  static final String QUIT = "Q";
     private  static final String GET = "G";
     private  static final String SEND = "S";
+    private static final int  SERVICE_PORT = 1099;
+    private static final String SERVICE_NAME ="MessageService";
+    private static final String SERVER_IP ="127.0.0.1";
 
-    private Client() {}
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String quit = "QUIT";
+        System.setProperty("java.security.policy","file:./test.policy");
+
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
+
+
 
         try {
+
 
             String clientID;
             String cmd = " ";
             String msg = " ";
 
             // Getting the registry
-            Registry registry = LocateRegistry.getRegistry(null);
+            Registry registry = LocateRegistry.getRegistry(SERVER_IP, SERVICE_PORT);
             // Looking up the registry for the remote object
-            MessageService stub = (MessageService) registry.lookup("MessageService");
+            MessageService stub = (MessageService) registry.lookup(SERVICE_NAME);
             // Calling the remote method using the obtained object
 
             // TODO: This is just for test, use Client IP instead after test was success

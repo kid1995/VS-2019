@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 public class ImplMessageService implements MessageService {
 
     private static int MAX_MSG_CAPACITY = 10;
+
     private int msgID = 0;
 
     private DeliveryQueue messageQueue = new DeliveryQueue(MAX_MSG_CAPACITY);
