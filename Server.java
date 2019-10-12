@@ -12,6 +12,7 @@ public class Server {
     public static void main(String args[]) {
         List<ClientInfo> clientInfos = new ArrayList<>();
 
+
         System.setProperty("java.security.policy","file:./test.policy");
 
         if (System.getSecurityManager() == null) {
@@ -21,6 +22,7 @@ public class Server {
 
         try {
             ImplMessageService obj = new ImplMessageService(40,clientInfos);
+
             MessageService stub = (MessageService) UnicastRemoteObject.exportObject(obj, 0);
 
             Registry registry = LocateRegistry.getRegistry(SERVICE_PORT);
