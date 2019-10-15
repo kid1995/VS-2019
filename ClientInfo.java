@@ -32,4 +32,13 @@ public class ClientInfo {
     public void setLastActiveTime(long lastActiveTime) {
         this.lastActiveTime = lastActiveTime;
     }
+
+    @Override
+    public String toString() {
+        return "ClientInfo{" +
+                "clientID='" + clientID + '\'' +
+                ", Inactive Time=" + ((System.currentTimeMillis()-lastActiveTime)/1000) + "s "+
+                "last Message: " + lastMsg +
+                '}';
+    }
 }
