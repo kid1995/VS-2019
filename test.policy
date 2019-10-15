@@ -3,5 +3,6 @@ grant {
     permission java.net.SocketPermission "localhost:1099", "connect, resolve";
     permission java.net.SocketPermission "127.0.0.1:1099", "connect, resolve";
     permission java.net.SocketPermission "192.168.0.113:1099", "connect, resolve";
+	permission java.net.SocketPermission "192.168.178.20:1099", "connect, resolve";
     permission java.net.SocketPermission "localhost:80", "connect, resolve";
 };
