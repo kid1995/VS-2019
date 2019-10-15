@@ -7,6 +7,7 @@ public class Timer {
     }
 
     public static long calcDeactiveTime(long lastActiveTime){
-        return (System.currentTimeMillis() -lastActiveTime)/(1000*60);
+        System.out.println("Calc time : " +  (System.currentTimeMillis() -lastActiveTime)/1000);
+        return (System.currentTimeMillis() -lastActiveTime)/1000;
     }
 }

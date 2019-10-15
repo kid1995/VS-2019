@@ -34,6 +34,7 @@ public class ImplMessageService implements MessageService {
             currentClient = new ClientInfo(clientID, 0, Timer.getCurrentTimeStamp());
             clientInfos.add(currentClient);
             clientExit = clientInfos.indexOf(currentClient);
+            System.out.println("Client " + clientID +"was added at" + clientExit);
         }else {
             currentClient = clientInfos.get(clientExit);
             currentClient.setLastActiveTime(Timer.getCurrentTimeStamp());
