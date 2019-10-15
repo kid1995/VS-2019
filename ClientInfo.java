@@ -37,7 +37,7 @@ public class ClientInfo {
     public String toString() {
         return "ClientInfo{" +
                 "clientID='" + clientID + '\'' +
-                ", Inactive Time=" + ((System.currentTimeMillis()-lastActiveTime)/1000) + "s "+
+                ", Inactive Time=" + ((System.currentTimeMillis()-lastActiveTime)) + "ms "+
                 "last Message: " + lastMsg +
                 '}';
     }
