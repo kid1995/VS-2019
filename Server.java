@@ -42,7 +42,7 @@ public class Server {
 
 						while (itClientList.hasNext()){
 							checkedClient = itClientList.next();
-							if((now - itClientList.next().getLastActiveTime()) > REFRESH_TIME_IN_MIN){
+							if((now - checkedClient.getLastActiveTime()) > REFRESH_TIME_IN_MIN){
 								clientInfos.remove(clientInfos.indexOf(checkedClient));
 							}
 						}

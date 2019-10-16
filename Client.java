@@ -27,7 +27,9 @@ public class Client extends Application {
 	private static final int SERVICE_PORT = 1099;
 	private static final String SERVICE_NAME = "MessageService";
 	// private static final String SERVER_IP = "192.168.178.20";
-	private static final String SERVER_IP = "192.168.0.113";
+	// private static final String SERVER_IP = "192.168.0.113";
+	private static final String SERVER_IP = "141.22.27.107";
+
 	private Registry registry;
 	private MessageService stub;
 
@@ -65,7 +67,7 @@ public class Client extends Application {
 
 		Text infoText = new Text("");
 		infoText.setX(50);
-		infoText.setY(220);
+		infoText.setY(260);
 		infoText.setFill(Color.GREEN);
 		infoText.setFont(Font.font("Verdana", 15));
 
@@ -104,6 +106,11 @@ public class Client extends Application {
 			public void handle(ActionEvent event) {
 				text.setText("Please enter your command");
 				if (event.getEventType().equals(ActionEvent.ACTION)) {
+					if (clientID.equals("")) {
+                        clientID = textField.getText();
+                        clientIDText.setText("ClientID: " + clientID);
+                        textField.clear();
+                    } else {
 						switch (textField.getText()) {
 						case QUIT:
 							textField.clear();
@@ -165,6 +172,7 @@ public class Client extends Application {
 							});
 							break;
 						}
+				}
 				}
 			}
 		});
