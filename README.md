@@ -43,3 +43,7 @@ Start Client Side:
 [how to get host IP](https://stackoverflow.com/questions/9481865/getting-the-ip-address-of-the-current-machine-using-java)
 
 [java RMI for remote IP](https://stackoverflow.com/questions/35403765/java-rmi-for-remote-ip-host)
+
+Javac not found:
+
+set "path=%path%;C:\Program Files\Java\jdk1.8.0_181\bin"
