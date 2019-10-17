@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class Server {
 	private static final int SERVICE_PORT = 1099;
 	private static final String SERVICE_NAME = "MessageService";
-	private static final long REFRESH_TIME_IN_MIN = 60000;           //1min = 60000ms
+	private static final long LIMITED_TIME_T = 60000;           // 60000ms = 1min
 	private static Semaphore semaphore = new Semaphore(1);
 
 
@@ -22,8 +22,9 @@ public class Server {
 			this.clientInfos = clientInfoList;
 		}
 
+		// after
 		public void run() {
-			System.err.println("Checker ready");
+			System.err.println("Checking to remove the clients,\r\n who was inactive more than " + LIMITED_TIME_T + " ms");
 			do {
 				try {
 					semaphore.acquire();
@@ -34,7 +35,6 @@ public class Server {
 						long now = System.currentTimeMillis();
 						ClientInfo checkedClient;
 
-						System.out.println(clientInfos.size() + " are active");
 						List<String> listClient = clientInfos.stream()
 								.map(ClientInfo::toString)
 								.collect(Collectors.toList());
@@ -42,8 +42,9 @@ public class Server {
 
 						while (itClientList.hasNext()){
 							checkedClient = itClientList.next();
-							if((now - itClientList.next().getLastActiveTime()) > REFRESH_TIME_IN_MIN){
-								clientInfos.remove(clientInfos.indexOf(checkedClient));
+							if((now - checkedClient.getLastActiveTime()) > LIMITED_TIME_T){
+								System.out.println("Client " + checkedClient.getClientID() + "will be removed");
+								itClientList.remove();
 							}
 						}
 
@@ -53,7 +54,7 @@ public class Server {
 						semaphore.release();
 						//System.out.println("CheckInactiveClient : available Semaphore permits now: " + semaphore.availablePermits());
 					}
-					Thread.sleep(1000 * 20);
+					Thread.sleep(1000 * 50); // after checking thread sleep for 50s
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

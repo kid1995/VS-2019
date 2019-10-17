@@ -27,15 +27,13 @@ public class ImplMessageService implements MessageService {
     }
 
     @Override
-    public String nextMessage(String clientID) throws RemoteException {
+    public String nextMessage(String clientID) {
         ClientInfo currentClient;
         try {
 
             // System.out.println("CheckInactiveClient: acquiring lock...");
             sem.acquire();
-            System.out.println("isClientExited: available Semaphore permits now: "
-                    + sem.availablePermits());
-
+            // System.out.println("isClientExited: available Semaphore permits now: " + sem.availablePermits());
             try {
                 int clientExit = isClientExited(clientID);
 
@@ -57,14 +55,12 @@ public class ImplMessageService implements MessageService {
             } finally {
                 // System.out.println("CheckInactiveClient : releasing lock...");
                 sem.release();
-                System.out.println("isClientExited : available Semaphore permits now: "
-                        + sem.availablePermits());
+                // System.out.println("isClientExited : available Semaphore permits now: " + sem.availablePermits());
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return null;
-
 
     }
 
@@ -74,8 +70,7 @@ public class ImplMessageService implements MessageService {
 
             // System.out.println("CheckInactiveClient: acquiring lock...");
             sem.acquire();
-            System.out.println("updateLastMsg: available Semaphore permits now: "
-                    + sem.availablePermits());
+         //   System.out.println("updateLastMsg: available Semaphore permits now: " + sem.availablePermits());
             try {
                 if (msgID - msgQueueSize > oldestMsg) {
                     oldestMsg++;
@@ -84,15 +79,11 @@ public class ImplMessageService implements MessageService {
             } finally {
                 // System.out.println("CheckInactiveClient : releasing lock...");
                 sem.release();
-                System.out.println("updateLastMsg : available Semaphore permits now: "
-                        + sem.availablePermits());
+       //         System.out.println("updateLastMsg : available Semaphore permits now: " + sem.availablePermits());
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("New Message from client : " + clientID);
-        messageQueue.add(clientID, message, msgID);
-        msgID++;
     }
 
 
