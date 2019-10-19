@@ -1,5 +1,3 @@
-import java.util.Date;
-
 public class Timer {
 
     public static long getCurrentTimeStamp(){

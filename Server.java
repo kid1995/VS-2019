@@ -45,7 +45,6 @@ public class Server {
 							if((now - checkedClient.getLastActiveTime()) > LIMITED_TIME_T){
 								System.out.println("Client " + checkedClient.getClientID() + "will be removed");
 								itClientList.remove();
-
 							}
 						}
 

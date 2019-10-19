@@ -3,7 +3,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-// Servant Class fÃ¼r Dispatcher Skeleton und alle davon unterstÃ¼rzen entfernten Objekt
+// Servant Class für Dispatcher Skeleton und alle davon unterstürzen entfernten Objekt
 
 public class ImplMessageService implements MessageService {
 
@@ -76,6 +76,9 @@ public class ImplMessageService implements MessageService {
                     oldestMsg++;
                     updateLastMsg(oldestMsg);
                 }
+                System.out.println("New Message from client : " + clientID);
+                messageQueue.add(clientID, message, msgID);
+                msgID++;
             } finally {
                 // System.out.println("CheckInactiveClient : releasing lock...");
                 sem.release();
