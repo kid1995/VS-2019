@@ -34,13 +34,10 @@ public class Client extends Application {
 
 	private Registry registry;
 	private MessageService stub;
-<<<<<<< HEAD
 	private String serverIP;
 	private String clientID;
 	private String localIP;
-=======
 	private String ip = "";
->>>>>>> 8736e283d7e1e2d12f831c13f54b1d7ffe915a94
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -85,8 +82,7 @@ public class Client extends Application {
 		ipInput.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				// serverIP = ipInput.getText();
-				serverIP = "192.168.178.20";
+				 serverIP = ipInput.getText();
 				clientID = localIP + "@" + serverIP;
 				clientIDText.setText(clientID);
 				// Getting the registry
@@ -117,10 +113,7 @@ public class Client extends Application {
 
 		comboBox.setOnAction(new EventHandler<ActionEvent>() {
 			String msg = "";
-<<<<<<< HEAD
-=======
 			String clientID = ip;
->>>>>>> 8736e283d7e1e2d12f831c13f54b1d7ffe915a94
 
 			@Override
 			public void handle(ActionEvent event) {
