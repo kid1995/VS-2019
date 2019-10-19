@@ -30,6 +30,7 @@ public class Client extends Application {
 	private static final String SERVER_IP = "192.168.0.113";
 	private Registry registry;
 	private MessageService stub;
+	private String ip = "";
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -46,7 +47,6 @@ public class Client extends Application {
 
 		}
 		// Calling the remote method using the obtained object
-		String ip = "";
 		try (final DatagramSocket socket = new DatagramSocket()) {
 			socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
 			ip = socket.getLocalAddress().getHostAddress();
@@ -98,7 +98,7 @@ public class Client extends Application {
 
 		textField.setOnAction(new EventHandler<ActionEvent>() {
 			String msg = "";
-			String clientID = "";
+			String clientID = ip;
 
 			@Override
 			public void handle(ActionEvent event) {
