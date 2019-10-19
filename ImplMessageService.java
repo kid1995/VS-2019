@@ -76,6 +76,9 @@ public class ImplMessageService implements MessageService {
                     oldestMsg++;
                     updateLastMsg(oldestMsg);
                 }
+                System.out.println("New Message from client : " + clientID);
+                messageQueue.add(clientID, message, msgID);
+                msgID++;
             } finally {
                 // System.out.println("CheckInactiveClient : releasing lock...");
                 sem.release();
