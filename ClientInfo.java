@@ -5,6 +5,7 @@ public class ClientInfo {
 
     public ClientInfo(String clientID, int lastMsg, long lastActiveTime) {
         this.clientID = clientID;
+        //Zu aufrufende Nachricht
         this.lastMsg = lastMsg;
         this.lastActiveTime = lastActiveTime;
     }

@@ -25,6 +25,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Client extends Application {
+	// Toleranzintervall für 'at-least-once'
 	private static final int TOLERANCE__TIME = 10;
 	private static final String QUIT = "Quit";
 	private static final String GET = "Get";
@@ -37,12 +38,11 @@ public class Client extends Application {
 	private String serverIP;
 	private String clientID;
 	private String localIP;
-	private String ip = "";
 
 	@Override
 	public void start(Stage stage) throws Exception {
 
-		// Calling the remote method using the obtained object
+		// Herausfinden der eigenen IP-Adresse
 		try (final DatagramSocket socket = new DatagramSocket()) {
 			socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
 			localIP = socket.getLocalAddress().getHostAddress();
@@ -54,17 +54,18 @@ public class Client extends Application {
 			e.printStackTrace();
 		}
 
+		// JAVAFX CONFIG START
 		Scene scene = new Scene(new Group(), 1200, 450);
 		GridPane grid = new GridPane();
 		TextField ipInput = new TextField();
 
-		Text serverIPText = new Text("Please put in Server IP, you wish to connect to");
-		serverIPText.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
+		Text serverIPRequest = new Text("Please put in Server IP, you wish to connect to");
+		serverIPRequest.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
 
-		Text infoText = new Text("");
-		infoText.setX(50);
-		infoText.setY(260);
-		infoText.setFont(Font.font("Verdana", 15));
+		Text infoOutput = new Text("");
+		infoOutput.setX(50);
+		infoOutput.setY(260);
+		infoOutput.setFont(Font.font("Verdana", 15));
 
 		Text clientIDText = new Text("");
 		clientIDText.setX(550);
@@ -79,41 +80,43 @@ public class Client extends Application {
 		Button getButton = new Button("Get Message");
 		Button getAllButton = new Button("Get all Messages");
 
+		grid.getColumnConstraints().add(new ColumnConstraints(100)); // column 0 is 100 wide
+		grid.getColumnConstraints().add(new ColumnConstraints(100)); // column 1 is 200 wide
+		grid.setVgap(4);
+		grid.setHgap(10);
+		grid.setPadding(new Insets(6, 6, 6, 6));
+		grid.add(ipInput, 0, 5);
+		grid.add(serverIPRequest, 0, 0);
+		grid.add(infoOutput, 1, 5);
+
+		Group root = (Group) scene.getRoot();
+		root.getChildren().add(grid);
+		stage.setScene(scene);
+		stage.show();
+		// JAVAFX CONFIG END
+
 		ipInput.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				 serverIP = ipInput.getText();
+				// Server IP von Benutzerinput
+				serverIP = ipInput.getText();
 				clientID = localIP + "@" + serverIP;
 				clientIDText.setText(clientID);
-				// Getting the registry
-				try {
-					registry = LocateRegistry.getRegistry(serverIP, SERVICE_PORT);
-				} catch (RemoteException e) {
-					// e.printStackTrace();
-				}
-				// Looking up the registry for the remote object
-				try {
-					stub = (MessageService) registry.lookup(SERVICE_NAME);
-				} catch (Exception e) {
-
-				}
-				System.out.println("2" + serverIP);
+				remoteMethodeHandle();
+				// GUI von ServerIP Request zu Chat GUI ändern
 				grid.getChildren().remove(ipInput);
-				grid.getChildren().remove(serverIPText);
+				grid.getChildren().remove(serverIPRequest);
 				grid.add(new Label("Commands :"), 0, 0);
 				grid.add(comboBox, 1, 0);
 				grid.add(new Label("ClientID:"), 2, 0);
 				grid.add(clientIDText, 3, 0);
 				grid.add(new Label("Input: "), 0, 1);
 				grid.add(msgField, 1, 1, 3, 1);
-
 			}
-
 		});
 
 		comboBox.setOnAction(new EventHandler<ActionEvent>() {
 			String msg = "";
-			String clientID = ip;
 
 			@Override
 			public void handle(ActionEvent event) {
@@ -127,7 +130,7 @@ public class Client extends Application {
 					}
 					break;
 				case GET:
-					infoText.setText("");
+					infoOutput.setText("");
 					grid.add(getButton, 1, 3);
 					grid.add(getAllButton, 3, 3);
 					getButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -135,55 +138,61 @@ public class Client extends Application {
 						@Override
 						public void handle(ActionEvent event) {
 							try {
+								// Nachricht abrufen
 								msg = stub.nextMessage(clientID);
 							} catch (RemoteException e) {
-								infoText.setFill(Color.RED);
-								infoText.setText("Message could not be recevied!");
-								System.out.println("Get Exception");
+								// Server nicht erreichbar --> Beenden des Programms
 								Platform.exit();
 								System.exit(0);
 							}
+							// Message vorhanden?
 							if (msg != null) {
-								infoText.setFill(Color.GREEN);
-								infoText.setText("Received message: " + msg);
+								infoOutput.setFill(Color.GREEN);
+								infoOutput.setText("Received message: " + msg);
 							} else {
-								infoText.setFill(Color.RED);
-								infoText.setText("No new message !!!");
+								infoOutput.setFill(Color.RED);
+								infoOutput.setText("No new message !!!");
 							}
 						}
 
 					});
-					// Get all Messages
+					// Get alle Messages
 					getAllButton.setOnAction(new EventHandler<ActionEvent>() {
+						// String zum Zusammenfügen alles Messages
 						String allMsgs = "";
 
 						@Override
 						public void handle(ActionEvent arg0) {
+							boolean noMsg = true;
 							allMsgs = "Received messages: \n";
 							do {
 								try {
 									msg = stub.nextMessage(clientID);
 									if (msg != null) {
+										// Message hinzufügen und in GUI anzeigen
+										noMsg = false;
 										allMsgs += msg;
 										allMsgs += "\n";
-										infoText.setFill(Color.GREEN);
-										infoText.setText(allMsgs);
+										infoOutput.setFill(Color.GREEN);
+										infoOutput.setText(allMsgs);
 									}
 								} catch (RemoteException e) {
-									infoText.setFill(Color.RED);
-									infoText.setText("Message could not be recevied!");
-									System.out.println("Get Exception");
+									// Server nicht erreichbar --> Beenden des Programms
 									Platform.exit();
 									System.exit(0);
 								}
 							} while (msg != null);
-
+							// Wenn gar keine Message vorhanden
+							if (noMsg) {
+								infoOutput.setFill(Color.RED);
+								infoOutput.setText("No new message !!!");
+							}
 						}
 
 					});
 					break;
 				case SEND:
-					infoText.setText("");
+					infoOutput.setText("");
 					grid.getChildren().remove(getButton);
 					grid.getChildren().remove(getAllButton);
 					msgField.setOnAction(new EventHandler<ActionEvent>() {
@@ -192,32 +201,36 @@ public class Client extends Application {
 							boolean quit = false;
 							long startTime = System.currentTimeMillis();
 							long waitedTime = 0;
-							if (event.getEventType().equals(ActionEvent.ACTION)) {
-								msg = msgField.getText();
-								System.out.println(msg);
-								while (waitedTime <= TOLERANCE__TIME) {
-									try {
-										stub.newMessage(clientID, msg);
-										msgField.clear();
-										quit = false;
-										break;
-									} catch (RemoteException e) {
-										infoText.setFill(Color.RED);
-										infoText.setText("Message could not be sent!");
-										remoteMethodeHandle();
-										waitedTime = (System.currentTimeMillis() - startTime) / 1000;
-										System.out.println("Send Exception");
-										quit = true;
-										// e.printStackTrace();
-									}
+							// Zu sendende Message
+							msg = msgField.getText();
+							// Toleranzintervall, wenn Server nicht erreichbar
+							while (waitedTime <= TOLERANCE__TIME) {
+								try {
+									stub.newMessage(clientID, msg);
+									msgField.clear();
+									// Wenn eine Nachricht erhalten wurde, soll Programm nicht beendet werden
+									quit = false;
+									break;
+								} catch (RemoteException e) {
+									infoOutput.setFill(Color.RED);
+									infoOutput.setText("Message could not be sent!");
+									// Registry neu erreichen
+									remoteMethodeHandle();
+									// Zeit aktualisieren
+									waitedTime = (System.currentTimeMillis() - startTime) / 1000;
+									System.out.println("Server unreachable!");
+									// Wenn die Schleife durchgelaufen ist und der Server nicht erreicht wurde, wird
+									// das Programm beendet
+									quit = true;
 								}
-								if (quit) {
-									Platform.exit();
-									System.exit(0);
-								}
-								infoText.setFill(Color.GREEN);
-								infoText.setText("Message: \"" + msg + "\" sent!");
 							}
+							// Server erreicht?
+							if (quit) {
+								Platform.exit();
+								System.exit(0);
+							}
+							infoOutput.setFill(Color.GREEN);
+							infoOutput.setText("Message: \"" + msg + "\" sent!");
 						}
 
 					});
@@ -226,46 +239,24 @@ public class Client extends Application {
 			}
 		});
 
-		grid.getColumnConstraints().add(new ColumnConstraints(100)); // column 0 is 100 wide
-		grid.getColumnConstraints().add(new ColumnConstraints(100)); // column 1 is 200 wide
-		grid.setVgap(4);
-		grid.setHgap(10);
-		grid.setPadding(new Insets(6, 6, 6, 6));
-		grid.add(ipInput, 0, 5);
-		grid.add(serverIPText, 0, 0);
-		grid.add(infoText, 1, 5);
-
-		Group root = (Group) scene.getRoot();
-		root.getChildren().add(grid);
-		stage.setScene(scene);
-		stage.show();
-
 	}
 
 	private void remoteMethodeHandle() {
+		// Registry bekommen
 		try {
 			registry = LocateRegistry.getRegistry(serverIP, SERVICE_PORT);
-		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
-			System.out.println("LOCATE REGISTRY Exception");
-			// e1.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		}
+		// Lookup der Registry für entferntes Objekt
 		try {
 			stub = (MessageService) registry.lookup(SERVICE_NAME);
-		} catch (RemoteException | NotBoundException e1) {
-			System.out.println("LOOKUP Exception");
-			// TODO Auto-generated catch block
-			// e1.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
 	public static void main(String[] args) {
-		System.setProperty("java.security.policy", "file:./test.policy");
-
-		if (System.getSecurityManager() == null) {
-			System.setSecurityManager(new SecurityManager());
-		}
-
 		launch();
 	}
 }

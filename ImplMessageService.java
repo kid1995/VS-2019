@@ -6,17 +6,11 @@ import java.util.concurrent.Semaphore;
 // Servant Class für Dispatcher Skeleton und alle davon unterstürzen entfernten Objekt
 
 public class ImplMessageService implements MessageService {
-
     private int msgQueueSize;
-
     private int msgID = 0;
-
     private int oldestMsg = 0;
     private List<ClientInfo> clientInfos;
-
     private Semaphore sem;
-
-
     private DeliveryQueue messageQueue;
 
     ImplMessageService(int msgQueueSize, List<ClientInfo> clientInfos, Semaphore semaphore) {
@@ -30,32 +24,31 @@ public class ImplMessageService implements MessageService {
     public String nextMessage(String clientID) {
         ClientInfo currentClient;
         try {
-
-            // System.out.println("CheckInactiveClient: acquiring lock...");
             sem.acquire();
-            // System.out.println("isClientExited: available Semaphore permits now: " + sem.availablePermits());
             try {
-                int clientExit = isClientExited(clientID);
-
-                if (clientExit < 0) {
+                int clientIndex = isClientExited(clientID);
+                //Ist der Client schon verbunden?
+                if (clientIndex < 0) {
+                	//Client in Liste ahinzufügen
                     currentClient = new ClientInfo(clientID, 0, Timer.getCurrentTimeStamp());
                     clientInfos.add(currentClient);
-                    clientExit = clientInfos.indexOf(currentClient);
-                    System.out.println("Client " + clientID + " was added at" + clientExit);
+                    clientIndex = clientInfos.indexOf(currentClient);
+                    System.out.println("Client " + clientID + " was added at" + clientIndex);
                 } else {
-                    currentClient = clientInfos.get(clientExit);
+                	//Letzte Aktivitätszeit aktualisieren und Client aus der Liste bekommen
+                    currentClient = clientInfos.get(clientIndex);
                     currentClient.setLastActiveTime(Timer.getCurrentTimeStamp());
                 }
+                //Nachricht aus der Queue bekommen
                 Message msg = messageQueue.get(currentClient.getLastMsg());
                 if (msg != null) {
+                	//Inderx der zu Aufrufenden Nachricht inkrementieren
                     currentClient.setLastMsg(currentClient.getLastMsg() + 1);
-                    clientInfos.set(clientExit, currentClient);
+                    clientInfos.set(clientIndex, currentClient);
                     return msg.toString();
                 }
             } finally {
-                // System.out.println("CheckInactiveClient : releasing lock...");
                 sem.release();
-                // System.out.println("isClientExited : available Semaphore permits now: " + sem.availablePermits());
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -67,29 +60,27 @@ public class ImplMessageService implements MessageService {
     @Override
     public void newMessage(String clientID, String message) throws RemoteException {
         try {
-
-            // System.out.println("CheckInactiveClient: acquiring lock...");
             sem.acquire();
-         //   System.out.println("updateLastMsg: available Semaphore permits now: " + sem.availablePermits());
             try {
+            	//Wenn die Queue voll ist wird der Index der ältesten Nachricht um eins inkrementiert und somit wird die ältere Nachricht davor überschrieben
                 if (msgID - msgQueueSize > oldestMsg) {
                     oldestMsg++;
                     updateLastMsg(oldestMsg);
                 }
                 System.out.println("New Message from client : " + clientID);
+                //Nachricht der Queue hinzufügen
                 messageQueue.add(clientID, message, msgID);
+                //Message Index erhöhen
                 msgID++;
             } finally {
-                // System.out.println("CheckInactiveClient : releasing lock...");
                 sem.release();
-       //         System.out.println("updateLastMsg : available Semaphore permits now: " + sem.availablePermits());
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-
+    //Prüft ob der Client verbunden ist oder schon die Verbindung abgebrochen hat
     private int isClientExited(String clientID) {
         Iterator<ClientInfo> it = clientInfos.iterator();
         int clientIndex = -1;
@@ -103,7 +94,7 @@ public class ImplMessageService implements MessageService {
         }
         return clientIndex;
     }
-
+    //Der Index der ältesten Nachricht und somit der zu Aufrufenden Nachricht wird für alle Clients aktualisiert
     private void updateLastMsg(int lastMsgID) {
         Iterator<ClientInfo> it = clientInfos.iterator();
         ClientInfo currentClient;

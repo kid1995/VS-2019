@@ -16,6 +16,7 @@ public class DeliveryQueue{
     public void add(String clientID, String msg, int msgID){
         String id = Integer.toString(msgID);
         Message newMsg = new Message(clientID, msg, id);
+        //Da der msgIndex stets inkrementiert wird, wird mit Modulo nie die Kapazität überschritten
         int queueIndex = msgID%capacity;
         deliveryQueue[queueIndex] =  newMsg;
     }
