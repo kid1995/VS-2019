@@ -1,0 +1,39 @@
+recompile java file:
+	javac ./src/*.java -d ./out/production/VS_A3/
+
+use netstat to check multicast adress and interface:
+	netstat -g
+turn on sniffer:
+	
+	./Sniffer/STDMAsniffer <multicast-ip> 15207 <multicast-interface> -adapt
+
+	exmaple: ./Sniffer/STDMAsniffer 224.0.0.251 15207 eth0 -adapt
+
+start 5 station class A:
+	./startStations.sh <multicast-interface> <multicast-ip> 15207 1 5 A 0
+	
+	exmaple: ./startStations.sh enp6s0 224.0.0.251 15207 1 5 A 0
+
+start 5 station class B:
+	./startStations.sh <multicast-interface> <multicast-ip> 15207 6 10 B 10
+	
+	exmaple: ./startStations.sh enp6s0 224.0.0.251 15207 6 10 B 10
+
+kill:
+	./pkillAllStations.sh 
+
+	
+
+!!! DO ALL COMMAND IN FOLDER
+
+
+
+javac ./src/*.java -d ./out/production/VS_A3/
+
+./Sniffer/STDMAsniffer 225.10.1.4 300<rechnernr> eth2 -adapt
+
+./startStations.sh eth2 225.10.1.4 300<rechnernr> 1 5 A 0
+
+./startStations.sh eth2 225.10.1.4 300<rechnernr> 6 10 B 15
+
+./pkillAllStations.sh 
